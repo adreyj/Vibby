@@ -1,0 +1,118 @@
+import 'package:flutter/material.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:provider/provider.dart';
+
+void main() => runApp(MyApp());
+
+class DiaryData extends ChangeNotifier {
+  int currentIndex = 0;
+
+  void changeTab(int index) {
+    currentIndex = index;
+    notifyListeners();
+  }
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => DiaryData(),
+      child: MaterialApp(
+        home: DiaryPage(),
+      ),
+    );
+  }
+}
+
+class DiaryPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final diaryData = Provider.of<DiaryData>(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Diary App'),
+      ),
+      body: Column(
+        children: <Widget>[
+          TableCalendar(
+            // required parameters
+            focusedDay: DateTime.now(),
+            firstDay: DateTime.utc(2023, 1, 1),
+            lastDay: DateTime.utc(2023, 12, 31),
+            calendarFormat: CalendarFormat.month,
+            onFormatChanged: (format) {},
+            onPageChanged: (focusedDay) {},
+            calendarStyle: CalendarStyle(
+                // customize your calendar style here
+                ),
+            selectedDayPredicate: (day) {
+              // Use this to determine if a day is selected
+              return isSameDay(day, DateTime.now());
+            },
+            // eventLoader: (day) {
+            //   return someEventsForDay(day);
+            // },
+          ),
+          Expanded(
+            child: IndexedStack(
+              index: diaryData.currentIndex,
+              children: <Widget>[
+                LogsTab(),
+                DiaryTab(),
+                ToDoTab(),
+              ],
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: diaryData.currentIndex,
+        onTap: (index) {
+          diaryData.changeTab(index);
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            label: 'Logs',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.book),
+            label: 'Diary',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.check),
+            label: 'To Do',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class LogsTab extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Logs Tab Content'),
+    );
+  }
+}
+
+class DiaryTab extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Diary Tab Content'),
+    );
+  }
+}
+
+class ToDoTab extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('To Do Tab Content'),
+    );
+  }
+}

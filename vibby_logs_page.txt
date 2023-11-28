@@ -1,0 +1,111 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class DiaryData with ChangeNotifier {
+  int _currentIndex = 0;
+
+  int get currentIndex => _currentIndex;
+
+  void changeTab(int index) {
+    _currentIndex = index;
+    notifyListeners();
+  }
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => DiaryData(),
+      child: MaterialApp(
+        title: 'Vibby',
+        home: BottomNavBar(),
+      ),
+    );
+  }
+}
+
+class BottomNavBar extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Vibby'),
+      ),
+      body: Consumer<DiaryData>(
+        builder: (context, diaryData, child) {
+          if (diaryData.currentIndex == 0) {
+            return LogsPage();
+          } else if (diaryData.currentIndex == 1) {
+            // Diary Page
+            return Placeholder(); // Replace this with your DiaryPage widget
+          } else {
+            // To Do Page
+            return Placeholder(); // Replace this with your ToDoPage widget
+          }
+        },
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: Provider.of<DiaryData>(context).currentIndex,
+        onTap: (index) {
+          Provider.of<DiaryData>(context, listen: false).changeTab(index);
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            label: 'Logs',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.book),
+            label: 'Diary',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.check),
+            label: 'To Do',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class LogsPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Retrieve the list of logs. For example, you can replace this with your data source logic.
+    List<String> logs = [
+      'Log 1: Something happened',
+      'Log 2: Something else happened',
+      'Log 3: Another event occurred',
+    ];
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Logs'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: ListView.builder(
+          itemCount: logs.length,
+          itemBuilder: (context, index) {
+            return Card(
+              elevation: 2,
+              margin: EdgeInsets.symmetric(vertical: 8.0),
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  logs[index],
+                  style: TextStyle(fontSize: 18.0),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}

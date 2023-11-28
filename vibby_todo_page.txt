@@ -1,0 +1,96 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+void main() => runApp(MyApp());
+
+class DiaryData extends ChangeNotifier {
+  int currentIndex = 2;
+
+  void changeTab(int index) {
+    currentIndex = index;
+    notifyListeners();
+  }
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => DiaryData(),
+      child: MaterialApp(
+        title: 'To-Do App',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: ToDoTab(),
+      ),
+    );
+  }
+}
+
+class ToDoPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    List<String> tasks = [
+      'Task 1: Complete homework',
+      'Task 2: Go for a walk',
+      'Task 3: Read a book',
+    ];
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('To Do'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: ListView.builder(
+          itemCount: tasks.length,
+          itemBuilder: (context, index) {
+            return Card(
+              elevation: 2,
+              margin: EdgeInsets.symmetric(vertical: 8.0),
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  tasks[index],
+                  style: TextStyle(fontSize: 18.0),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class ToDoTab extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var diaryData = Provider.of<DiaryData>(context);
+
+    return Scaffold(
+      body: ToDoPage(),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: diaryData.currentIndex,
+        onTap: (index) {
+          diaryData.changeTab(index);
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            label: 'Logs',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.book),
+            label: 'Diary',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.check),
+            label: 'To Do',
+          ),
+        ],
+      ),
+    );
+  }
+}
